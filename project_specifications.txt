@@ -58,28 +58,14 @@ The generated analysis must contain:
 - Recommended technologies: Streamlit, Flask, FastAPI with a frontend, or another Python-based UI framework.
 
 ================================================================================
-4. ADVANCED FEATURES (CHOOSE AT LEAST ONE)
+4. ADVANCED FEATURE
 ================================================================================
-4.1 Option A: Retrieval-Augmented Generation (RAG)
-- Build a small collection of job descriptions or skill requirements.
-- Generate embeddings for the documents and store them in a vector database.
-- Retrieve relevant information using semantic similarity to improve resume evaluation.
 
-4.2 Option B: Resume Improvement Assistant
+Resume Improvement Assistant
 - Allow users to request suggestions for improving specific resume sections.
 - Generate improved descriptions of projects or work experience.
 - Suggest relevant keywords based on the job description.
 - Guardrail: Ensure the application does not invent qualifications or experience.
-
-4.3 Option C: Multiple Job Matching
-- Allow users to provide multiple job descriptions.
-- Compare one resume against multiple positions and rank them by estimated compatibility.
-- Explain why a particular job is a stronger match.
-
-4.4 Option D: Resume Comparison and Evaluation
-- Compare two versions of the same resume.
-- Identify improvements and remaining weaknesses.
-- Explain which version better matches a particular job description.
 
 ================================================================================
 5. TESTING AND EVALUATION
