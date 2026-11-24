@@ -39,6 +39,7 @@ class AnalysisResponse(BaseModel):
     recommendations: List[str]
     keywords: List[str]
     annotations: List[Annotation]
+    extracted_resume_text: Optional[str] = None
 
 def create_prompt(resume, job_desc):
     return f"""
@@ -68,7 +69,8 @@ def create_prompt(resume, job_desc):
             }}
         ]
     }}
-    Ensure the "text" in annotations matches the resume content exactly so it can be highlighted in the UI.
+    Ensure the "text" in annotations matches the resume content exactly (case sensitive, same punctuation) so it can be highlighted in the UI.
+    Provide at least 3-5 annotations of different types (match, improvement, missing).
     Do not include any text before or after the JSON object.
     """
 
@@ -100,7 +102,7 @@ async def extract_text_from_file(file: UploadFile) -> str:
         # Fallback for other files if needed, or error
         return content.decode('utf-8', errors='ignore')
 
-@app.post("/analyze", response_model=AnalysisResponse)
+@app.post("/analyze")
 async def analyze_resume(
     resume_text: str = Form(None),
     job_description: str = Form(None),
@@ -138,8 +140,13 @@ async def analyze_resume(
         )
         response.raise_for_status()
         result_json = response.json().get("response", "{}")
-        return json.loads(result_json)
+        print(f"Ollama response: {result_json}")
+        data = json.loads(result_json)
+        # Add extracted_resume_text to the dict before returning
+        data["extracted_resume_text"] = final_resume_text
+        return data
     except Exception as e:
+        print(f"Error in analyze_resume: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":

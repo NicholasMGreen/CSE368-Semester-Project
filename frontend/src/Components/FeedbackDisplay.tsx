@@ -26,8 +26,16 @@ interface FeedbackDisplayProps {
 const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({ results, resumeText, onBack }) => {
   // Function to highlight resume text based on annotations
   const renderHighlightedResume = () => {
+    console.log('resumeText:', resumeText);
+    console.log('resumeText length:', resumeText?.length);
+    console.log('annotations:', results.annotations);
+
+    if (!resumeText || resumeText.trim().length === 0) {
+      return <div className="resume-content">No resume text available</div>;
+    }
+
     if (!results.annotations || results.annotations.length === 0) {
-      return <div dangerouslySetInnerHTML={{ __html: resumeText }} />;
+      return <div className="resume-content" dangerouslySetInnerHTML={{ __html: resumeText }} />;
     }
 
     let highlightedContent = resumeText;
@@ -35,15 +43,16 @@ const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({ results, resumeText, 
     // Sort annotations by length descending to avoid partial matches interfering with longer ones
     const sortedAnnotations = [...results.annotations].sort((a, b) => b.text.length - a.text.length);
 
-    sortedAnnotations.forEach((anno, index) => {
-      // Create a regex to find the exact text, being careful with HTML tags if resumeText is HTML
-      // For simplicity, if it's HTML from Quill, we might need a more robust way.
-      // But let's try a simple replacement first.
+    sortedAnnotations.forEach((anno) => {
+      if (!anno.text) return;
+
+      // Create a regex to find the exact text
+      // We use a temporary placeholder to avoid double-highlighting
       const escapedText = anno.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(escapedText, 'g');
       
       highlightedContent = highlightedContent.replace(regex, (match) => {
-        return `<span class="highlighted-section" data-feedback="${anno.feedback}" data-type="${anno.type}">${match}</span>`;
+        return `<span class="highlighted-section type-${anno.type}" data-feedback="${anno.feedback.replace(/"/g, '&quot;')}" data-type="${anno.type}">${match}</span>`;
       });
     });
 
@@ -192,13 +201,24 @@ const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({ results, resumeText, 
           margin-bottom: 12px;
         }
         .highlighted-section {
-          background-color: rgba(255, 242, 0, 0.3);
-          border-bottom: 2px solid #ffd700;
           cursor: help;
           position: relative;
+          transition: background-color 0.2s;
+        }
+        .highlighted-section.type-improvement {
+          background-color: rgba(255, 242, 0, 0.2);
+          border-bottom: 2px solid #ffd700;
+        }
+        .highlighted-section.type-match {
+          background-color: rgba(76, 175, 80, 0.1);
+          border-bottom: 2px solid #4caf50;
+        }
+        .highlighted-section.type-missing {
+          background-color: rgba(244, 67, 54, 0.1);
+          border-bottom: 2px solid #f44336;
         }
         .highlighted-section:hover {
-          background-color: rgba(255, 242, 0, 0.5);
+          filter: brightness(0.95);
         }
         .highlighted-section::after {
           content: attr(data-feedback);

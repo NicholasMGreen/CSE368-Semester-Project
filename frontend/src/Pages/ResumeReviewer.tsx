@@ -68,7 +68,18 @@ const ResumeReviewer: React.FC = () => {
       }
 
       const data = await response.json();
-      setAnalysisResults({ ...data, originalText: currentResumeText });
+      console.log('Backend response data:', data);
+      console.log('extracted_resume_text:', data.extracted_resume_text);
+      console.log('currentResumeText:', currentResumeText);
+
+      const originalText = data.extracted_resume_text || currentResumeText;
+      console.log('Final originalText being set:', originalText);
+
+      setAnalysisResults({
+        ...data,
+        originalText: originalText
+      });
+      console.log('Analysis result received:', data);
     } catch (error) {
       console.error('Error submitting resume:', error);
       alert('An error occurred while analyzing your resume.');
