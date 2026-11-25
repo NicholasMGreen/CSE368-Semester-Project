@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import FileUploader from '../Components/FileUploader';
 import FeedbackDisplay from '../Components/FeedbackDisplay';
+import LoadingScreen from '../Components/LoadingScreen';
 import type { AnalysisResults } from '../Components/FeedbackDisplay';
 
 const ResumeReviewer: React.FC = () => {
@@ -141,8 +142,10 @@ const ResumeReviewer: React.FC = () => {
   ];
 
   return (
-    <div className="resume-reviewer-container">
-      <h2>Submit Your Resume</h2>
+    <>
+      <LoadingScreen isVisible={isSubmitting} />
+      <div className="resume-reviewer-container">
+        <h2>Submit Your Resume</h2>
       <div className="input-section">
         <div className="resume-input-header">
           <h3>Job Description</h3>
@@ -163,13 +166,14 @@ const ResumeReviewer: React.FC = () => {
         </div>
 
         {jdInputMode === 'text' ? (
-          <div className="job-description-container">
-            <textarea
-              id="job-description"
+          <div className="text-editor-container">
+            <ReactQuill
+              theme="snow"
               value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Paste the job description here..."
-              rows={5}
+              onChange={setJobDescription}
+              modules={modules}
+              formats={formats}
+              placeholder="Paste or type the job description here..."
             />
           </div>
         ) : (
@@ -405,7 +409,8 @@ const ResumeReviewer: React.FC = () => {
           color: var(--error);
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 

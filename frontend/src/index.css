@@ -1,36 +1,59 @@
 :root {
-  --primary: #1a73e8;
-  --primary-hover: #174ea6;
+  /* Botanical-inspired green palette */
+  --primary: #059669;
+  --primary-hover: #047857;
+  --primary-light: #d1fae5;
   --on-primary: #ffffff;
-  
-  --surface: #ffffff;
-  --on-surface: #202124;
-  --on-surface-variant: #5f6368;
-  
-  --background: #f8f9fa;
-  --outline: #dadce0;
-  
-  --error: #d93025;
-  
-  --shadow: 0 1px 2px 0 rgba(60,64,67,.30), 0 1px 3px 1px rgba(60,64,67,.15);
-  --shadow-hover: 0 1px 3px 0 rgba(60,64,67,.30), 0 4px 8px 3px rgba(60,64,67,.15);
 
-  --radius-s: 4px;
-  --radius-m: 8px;
-  --radius-l: 12px;
+  --accent: #10b981;
+  --accent-dark: #065f46;
+  --accent-light: #6ee7b7;
+
+  --surface: #ffffff;
+  --surface-elevated: #f9fafb;
+  --on-surface: #1e293b;
+  --on-surface-variant: #64748b;
+
+  --background: #f8faf9;
+  --outline: #e1e8e5;
+  --outline-hover: #cbd5d1;
+
+  --error: #dc2626;
+  --success: #16a34a;
+  --warning: #f59e0b;
+
+  /* Refined shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-hover: var(--shadow-md);
+
+  /* Modern border radius */
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 16px;
   --radius-xl: 24px;
 
-  --sans: 'Google Sans', Roboto, Arial, sans-serif;
-  
-  font: 16px/1.5 var(--sans);
+  /* Typography */
+  --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  font: 16px/1.6 var(--sans);
   color: var(--on-surface);
   background-color: var(--background);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 #root {
@@ -39,36 +62,60 @@ body {
   flex-direction: column;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--sans);
-  font-weight: 400;
+  font-weight: 600;
   color: var(--on-surface);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 2.25rem;
-  margin: 2rem 0;
+  font-size: 2.5rem;
+  margin: 2rem 0 1rem 0;
 }
 
 h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  margin: 1.5rem 0 1rem 0;
 }
+
+h3 {
+  font-size: 1.25rem;
+  margin: 1rem 0 0.5rem 0;
+}
+
 p {
-  margin: 0;
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
 }
 
 code,
 .counter {
   font-family: var(--mono);
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  border-radius: var(--radius-s);
+  font-size: 0.9em;
 }
 
 code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  padding: 0.2em 0.4em;
+  background: var(--surface-elevated);
+  color: var(--primary);
+  border: 1px solid var(--outline);
+}
+
+button {
+  font-family: var(--sans);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+input, textarea, select {
+  font-family: var(--sans);
+}
+
+::selection {
+  background: var(--primary-light);
+  color: var(--on-surface);
 }

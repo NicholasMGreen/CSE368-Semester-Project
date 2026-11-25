@@ -5,3 +5,6 @@ python-multipart
 pydantic
 PyPDF2
 python-docx
+pdf2image
+pytesseract
+Pillow

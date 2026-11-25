@@ -9,6 +9,9 @@ import re
 import html
 import PyPDF2
 import docx
+from pdf2image import convert_from_bytes
+import pytesseract
+from PIL import Image
 
 app = FastAPI()
 
@@ -268,19 +271,48 @@ def clean_annotations(raw_annotations, batch_lines):
 
     return cleaned
 
+def extract_text_from_pdf_with_ocr(content: bytes) -> str:
+    """Extract text from PDF using OCR (for image-based PDFs)."""
+    try:
+        # Convert PDF pages to images
+        images = convert_from_bytes(content)
+        text = ""
+        for image in images:
+            # Use pytesseract to extract text from each page image
+            page_text = pytesseract.image_to_string(image)
+            text += page_text + "\n"
+        return text
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"OCR extraction failed: {str(e)}")
+
 async def extract_text_from_file(file: UploadFile) -> str:
     content = await file.read()
     filename = file.filename.lower()
-    
+
     if filename.endswith('.txt'):
         return content.decode('utf-8')
     elif filename.endswith('.pdf'):
         try:
+            # First, try standard PDF text extraction
             pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
             text = ""
             for page in pdf_reader.pages:
                 text += page.extract_text() + "\n"
+
+            # Check if we got meaningful text (at least 50 non-whitespace characters)
+            if len(text.strip()) < 50:
+                print("Standard PDF extraction yielded minimal text, trying OCR...")
+                text = extract_text_from_pdf_with_ocr(content)
+
+            if len(text.strip()) < 50:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Could not extract sufficient text from PDF. The PDF may be empty, corrupted, or contain only images without readable text."
+                )
+
             return text
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Could not extract text from PDF: {str(e)}")
     elif filename.endswith('.docx'):
