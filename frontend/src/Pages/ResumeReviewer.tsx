@@ -82,7 +82,10 @@ const ResumeReviewer: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to analyze resume');
+        // The backend explains setup problems in `detail`. Show that instead of a
+        // generic message so the user knows what to fix.
+        const problem = await response.json().catch(() => null);
+        throw new Error(problem?.detail || `The server returned ${response.status}.`);
       }
 
       const data = await response.json();
@@ -93,7 +96,15 @@ const ResumeReviewer: React.FC = () => {
       });
     } catch (error) {
       console.error('Error submitting resume:', error);
-      alert('An error occurred while analyzing your resume.');
+      // A network failure means the backend isn't reachable at all, which is a
+      // different fix from a request the backend rejected.
+      const reason =
+        error instanceof TypeError
+          ? 'Could not reach the backend on http://localhost:8000. Make sure the backend is running.'
+          : error instanceof Error
+            ? error.message
+            : String(error);
+      alert(`Could not analyze the resume.\n\n${reason}`);
     } finally {
       setIsSubmitting(false);
     }

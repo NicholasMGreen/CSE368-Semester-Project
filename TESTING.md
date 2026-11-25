@@ -1,71 +1,104 @@
 # Testing Guide: AI-Powered Resume Reviewer
 
-To test the application, follow these steps to set up the environment and run both the backend and frontend.
+Three pieces must all be running: **Ollama**, the **backend**, and the **frontend**.
 
-## Prerequisites
-1.  **Ollama**: Install from [ollama.com](https://ollama.com) and ensure it's running.
-2.  **Python 3.9+**: For the backend.
-3.  **Node.js & npm**: For the frontend.
+Most failures are one of: Ollama isn't running, the model isn't downloaded, or the
+backend was started without the virtual environment.
 
-## Step 1: Set up the Local LLM
-1.  Start the Ollama application.
-2.  Open a terminal and pull the required model:
-    ```bash
-    ollama pull llama3.2:3b
-    ```
+## Setup
 
-## Step 2: Start the Backend
-1.  Navigate to the `backend` directory:
-    ```bash
-    cd backend
-    ```
-2.  (Optional) Create and activate a virtual environment:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  Run the server:
-    ```bash
-    python3 main.py
-    ```
-    The backend will start at `http://localhost:8000`.
+**1. Ollama** — open the Ollama app, then download the model once (~2 GB):
 
-## Step 3: Start the Frontend
-1.  Open a new terminal window and navigate to the `frontend` directory:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    The frontend will typically start at `http://localhost:5173`.
+```bash
+ollama pull llama3.2:3b
+ollama list          # llama3.2:3b must be listed
+```
 
-## Step 4: Verify Connectivity
-You can use the provided verification script to check if Ollama is configured correctly:
+**2. Backend** — the virtual environment is required, not optional:
+
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python3 main.py                 # serves on :8000
+```
+
+Your prompt should show `(venv)`. Leave this terminal running.
+
+**3. Frontend** — in a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the URL it prints: **`http://localhost:5173`**. Use `localhost`, not
+`127.0.0.1` — Vite listens on IPv6 and the IP will not load.
+
+**4. Verify** — third terminal, with the venv active:
+
 ```bash
 python3 verify_env.py
 ```
 
-## Step 5: Manual Testing Scenarios
-Once both servers are running:
-1.  Open `http://localhost:5173` in your browser.
-2.  **Test Case 1: Text Entry**
-    - Paste a job description into the "Job Description" text area.
-    - Type or paste resume content into the rich text editor.
-    - Click **Submit** and verify the analysis results appear.
-3.  **Test Case 2: File Upload**
-    - Toggle "Upload File" for both sections.
-    - Upload a sample `.pdf`, `.docx`, or `.txt` file for the resume.
-    - Upload a sample file for the job description.
-    - Click **Submit** and verify the backend correctly extracts text and provides feedback.
-4.  **Test Case 3: Interactive Feedback**
-    - On the results page, hover over highlighted sections of the resume to see specific AI suggestions.
+Expect: `✅ Ollama is running and llama3.2:3b is available.`
+
+## Test cases
+
+Samples are in `samples/`; every resume is a PDF so the upload path gets tested.
+Each pairs with the same-numbered job description.
+
+| # | Why this pair |
+|---|---------------|
+| 1 | Backend engineer — strong match, high score |
+| 2 | Career changer — missing professional experience |
+| 3 | Overqualified for entry level — low score |
+| 4 | New grad — projects weigh heavily |
+| 5 | Data analyst vs ML engineer — wrong stack |
+
+Regenerate with `python samples/generate_samples.py` (needs `pip install reportlab`).
+
+**A. File upload** — set both sections to **Upload File**, pick a resume PDF and
+its job description, leave the checkboxes at their defaults, click **Submit**.
+
+**B. Typed text** — same, but use **Type text**. Worth testing separately: the
+editor sends HTML, which the backend converts back to plain lines.
+
+**C. Section checkboxes** — uncheck Skills and Education, then submit. Rewrites
+should focus on Experience and Projects.
+
+**Expect 20–90 seconds.** The app makes four model calls. "Analyzing..." is not a
+freeze.
+
+### A correct result has
+
+- Match score, overall assessment, and work experience feedback
+- Green matched-skill and red missing-skill tags
+- Recommendations and suggested keywords
+- Every resume line shown, colour-coded: green = good, yellow = could be stronger,
+  red = unclear or missing
+- A blue **Suggested rewrite** box under yellow lines
+
+No line is ever replaced by a suggestion — the original always stays visible.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `No module named 'requests'` | venv not active: `source venv/bin/activate` |
+| Submit fails | Run `python3 verify_env.py` |
+| `model "llama3.2:3b" not found` | `ollama pull llama3.2:3b` |
+| `Connection refused` on :11434 | Open the Ollama app |
+| `127.0.0.1:5173` won't load | Use `http://localhost:5173` |
+| Port 8000 in use | `lsof -i :8000`, kill that PID |
+| Port 5173 in use | Use the port Vite prints |
+| Feels frozen | First run loads the model; wait up to 2 min |
+
+## For the report
+
+Per sample, record: match score, skills matched and missed, how many rewrites, and
+whether any rewrite invented a number or tool. The backend prints
+`Dropped invented number in rewrite for line N` when the guardrail catches one, so
+keep the backend terminal visible while testing.

@@ -350,6 +350,14 @@ async def analyze_resume(
         overview["extracted_resume_text"] = final_resume_text
         overview["focus_sections"] = focus_sections
         return overview
+    except requests.exceptions.ConnectionError:
+        # The most common setup problem, so say what to do instead of failing silently.
+        message = (
+            "Could not reach Ollama on http://127.0.0.1:11434. "
+            "Make sure the Ollama app is running, then try again."
+        )
+        print(f"Error in analyze_resume: {message}")
+        raise HTTPException(status_code=503, detail=message)
     except Exception as e:
         print(f"Error in analyze_resume: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
