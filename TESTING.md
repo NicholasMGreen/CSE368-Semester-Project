@@ -26,6 +26,26 @@ python3 main.py                 # serves on :8000
 
 Your prompt should show `(venv)`. Leave this terminal running.
 
+**2b. OCR tools (only for scanned/image PDFs).** Text-based PDFs work without
+this. If a resume is a scan or screenshot, the backend falls back to OCR, which
+needs two system programs that `pip` cannot install:
+
+```bash
+brew install tesseract poppler      # macOS
+sudo apt install tesseract-ocr poppler-utils   # Ubuntu/WSL
+```
+
+Windows: install the Tesseract and Poppler binaries and add both to `PATH`.
+
+If these are missing, a scanned PDF fails with
+`OCR extraction failed: ... Is poppler installed and in PATH?`.
+You can confirm both are ready:
+
+```bash
+tesseract --version
+pdftoppm -v
+```
+
 **3. Frontend** — in a second terminal:
 
 ```bash
@@ -91,6 +111,7 @@ No line is ever replaced by a suggestion — the original always stays visible.
 | Submit fails | Run `python3 verify_env.py` |
 | `model "llama3.2:3b" not found` | `ollama pull llama3.2:3b` |
 | `Connection refused` on :11434 | Open the Ollama app |
+| `OCR extraction failed ... poppler` | `brew install tesseract poppler` (see Step 2b) |
 | `127.0.0.1:5173` won't load | Use `http://localhost:5173` |
 | Port 8000 in use | `lsof -i :8000`, kill that PID |
 | Port 5173 in use | Use the port Vite prints |
