@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import FileUploader from '../Components/FileUploader';
 import FeedbackDisplay from '../Components/FeedbackDisplay';
+import type { AnalysisResults } from '../Components/FeedbackDisplay';
 
 const ResumeReviewer: React.FC = () => {
   const [resumeText, setResumeText] = useState('');
@@ -12,7 +13,22 @@ const ResumeReviewer: React.FC = () => {
   const [resumeInputMode, setResumeInputMode] = useState<'text' | 'file'>('text');
   const [jdInputMode, setJdInputMode] = useState<'text' | 'file'>('text');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResults | null>(null);
+  // Which parts of the resume the user wants rewritten. Sending these as a hint
+  // keeps the suggestions focused on the sections they care about.
+  const [focusSections, setFocusSections] = useState<string[]>([
+    'Experience',
+    'Projects',
+    'Skills',
+  ]);
+
+  const toggleFocusSection = (section: string) => {
+    setFocusSections((current) =>
+      current.includes(section)
+        ? current.filter((item) => item !== section)
+        : [...current, section]
+    );
+  };
 
   const handleResumeFileSelect = (file: File | null) => {
     setResumeFile(file);
@@ -56,6 +72,8 @@ const ResumeReviewer: React.FC = () => {
       currentResumeText = `[Content of ${resumeFile.name}]`;
     }
 
+    formData.append('focus_sections', focusSections.join(','));
+
     setIsSubmitting(true);
     try {
       const response = await fetch('http://localhost:8000/analyze', {
@@ -68,18 +86,11 @@ const ResumeReviewer: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Backend response data:', data);
-      console.log('extracted_resume_text:', data.extracted_resume_text);
-      console.log('currentResumeText:', currentResumeText);
-
-      const originalText = data.extracted_resume_text || currentResumeText;
-      console.log('Final originalText being set:', originalText);
 
       setAnalysisResults({
         ...data,
-        originalText: originalText
+        originalText: data.extracted_resume_text || currentResumeText,
       });
-      console.log('Analysis result received:', data);
     } catch (error) {
       console.error('Error submitting resume:', error);
       alert('An error occurred while analyzing your resume.');
@@ -96,7 +107,7 @@ const ResumeReviewer: React.FC = () => {
     return (
       <FeedbackDisplay 
         results={analysisResults} 
-        resumeText={analysisResults.originalText} 
+        resumeText={analysisResults.originalText ?? ''} 
         onBack={handleBack} 
       />
     );
@@ -186,6 +197,25 @@ const ResumeReviewer: React.FC = () => {
         ) : (
           <FileUploader onFileSelect={handleResumeFileSelect} label="your resume" />
         )}
+
+        <div className="focus-section">
+          <h3>Improve which sections?</h3>
+          <p className="focus-hint">
+            Suggestions are focused on the sections you pick.
+          </p>
+          <div className="focus-options">
+            {['Experience', 'Projects', 'Skills', 'Education'].map((section) => (
+              <label key={section} className="focus-option">
+                <input
+                  type="checkbox"
+                  checked={focusSections.includes(section)}
+                  onChange={() => toggleFocusSection(section)}
+                />
+                {section}
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
 
       <button 
@@ -289,6 +319,34 @@ const ResumeReviewer: React.FC = () => {
         }
         .input-section {
           margin-bottom: 32px;
+        }
+        .focus-section {
+          margin-top: 24px;
+        }
+        .focus-section h3 {
+          margin: 0 0 4px 0;
+          font-size: 1.2rem;
+          font-weight: 500;
+        }
+        .focus-hint {
+          font-size: 0.85rem;
+          color: var(--on-surface-variant);
+          margin-bottom: 12px;
+        }
+        .focus-options {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+        .focus-option {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.95rem;
+          cursor: pointer;
+        }
+        .focus-option input {
+          cursor: pointer;
         }
         .submit-resume-button {
           display: block;

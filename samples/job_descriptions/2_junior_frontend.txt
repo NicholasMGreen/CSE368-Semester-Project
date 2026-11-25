@@ -1,0 +1,20 @@
+Junior Frontend Developer
+
+We are looking for a junior developer to help build our customer-facing web app.
+
+Responsibilities:
+- Build user interfaces in React
+- Convert designs into responsive HTML and CSS
+- Fix bugs reported by the support team
+- Participate in code reviews
+
+Requirements:
+- Working knowledge of JavaScript and React
+- Solid understanding of HTML and CSS
+- Familiarity with Git
+- Willingness to learn and ask questions
+
+Preferred:
+- TypeScript experience
+- Experience with a testing library such as Jest
+- A portfolio of personal projects

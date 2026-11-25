@@ -1,0 +1,19 @@
+Backend Software Engineer
+
+We are hiring a backend engineer to work on our shipment tracking platform.
+
+Responsibilities:
+- Build and maintain REST APIs in Python
+- Design and optimize SQL database schemas
+- Containerize services and deploy them to AWS
+- Write automated tests and review pull requests
+
+Requirements:
+- 3+ years of professional Python experience
+- Strong SQL and relational database knowledge
+- Experience with Docker and cloud deployment
+- Familiarity with Git based workflows
+
+Preferred:
+- FastAPI or Django experience
+- Experience with caching and performance tuning

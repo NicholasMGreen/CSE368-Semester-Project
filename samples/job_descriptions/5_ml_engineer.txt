@@ -1,0 +1,20 @@
+Machine Learning Engineer
+
+We are building recommendation models for our retail platform.
+
+Responsibilities:
+- Train and evaluate machine learning models
+- Build feature pipelines from raw event data
+- Deploy models to production and monitor them
+- Work with product teams to define success metrics
+
+Requirements:
+- Strong Python programming skills
+- Experience with PyTorch or TensorFlow
+- Understanding of model evaluation and cross validation
+- Experience with large datasets and SQL
+
+Preferred:
+- Experience with MLflow or similar experiment tracking
+- Knowledge of Spark or another distributed system
+- Familiarity with Docker and Kubernetes

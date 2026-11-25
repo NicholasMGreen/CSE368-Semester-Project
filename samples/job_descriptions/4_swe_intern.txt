@@ -1,0 +1,20 @@
+Software Engineering Intern (Summer 2026)
+
+Our internship program gives students real project work with a mentor.
+
+Responsibilities:
+- Contribute to a production Python service
+- Write tests for new features
+- Attend design discussions with the team
+- Present your work at the end of the summer
+
+Requirements:
+- Currently enrolled in a Computer Science program
+- Coursework or projects using Python
+- Basic understanding of Git
+- Strong communication skills
+
+Preferred:
+- Personal projects outside of class
+- Familiarity with SQL
+- Experience with React or another frontend framework

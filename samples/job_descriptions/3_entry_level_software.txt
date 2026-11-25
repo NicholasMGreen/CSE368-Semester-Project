@@ -1,0 +1,20 @@
+Entry Level Software Engineer
+
+Join our engineering team as an entry level software engineer.
+
+Responsibilities:
+- Develop applications using Python
+- Build and maintain REST APIs
+- Work with SQL databases
+- Collaborate with other developers
+- Write unit tests and debug applications
+
+Requirements:
+- Bachelor's degree in Computer Science or a related field
+- Knowledge of Python and SQL
+- Understanding of data structures and algorithms
+- Familiarity with Git
+
+Preferred:
+- Experience with Flask or Django
+- Knowledge of Docker and AWS
